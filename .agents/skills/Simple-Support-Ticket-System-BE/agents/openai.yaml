@@ -1,0 +1,6 @@
+interface:
+  display_name: "Simple Support Ticket System BE"
+  short_description: "Repo-specific patterns and workflows for Simple-Support-Ticket-System-BE"
+  default_prompt: "Use the Simple-Support-Ticket-System-BE repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
