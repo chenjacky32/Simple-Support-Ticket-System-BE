@@ -1,0 +1,609 @@
+openapi: 3.0.3
+info:
+  title: Simple Support Ticket System API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local Server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error401:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string, example: Invalid credentials }
+    Error403:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string, example: You don't have permission to access this resource }
+    Error404:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string, example: Resource not found }
+    Error409:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string, example: Email Already Exists }
+    Error422:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string, example: Validation error }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+    Error500:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string, example: Internal server error }
+paths:
+  /api/v1/auth/login:
+    post:
+      summary: Login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, example: example@example.com }
+                password: { type: string, example: testing123 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Login Successfull }
+                  data:
+                    type: object
+                    properties:
+                      accessToken: { type: string, example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9 }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '422': { description: Unprocessable Entity, content: { application/json: { schema: { $ref: '#/components/schemas/Error422' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/auth/register:
+    post:
+      summary: Register
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, example: testing123 }
+                email: { type: string, example: example@example.com }
+                password: { type: string, example: testing123 }
+                confirmPassword: { type: string, example: testing123 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Register Successfull }
+                  data:
+                    type: object
+                    properties:
+                      name: { type: string, example: testing123 }
+                      email: { type: string, example: example@example.com }
+                      role : { type: string, example: USERS }
+                      isActive: { type: boolean, example: true } 
+        '409': { description: Conflict, content: { application/json: { schema: { $ref: '#/components/schemas/Error409' } } } }
+        '422': { description: Unprocessable Entity, content: { application/json: { schema: { $ref: '#/components/schemas/Error422' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/users/list:
+    get:
+      summary: List Users
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: string, example: "1" }
+        - in: query
+          name: size
+          schema: { type: string, example: "10" }
+        - in: query
+          name: status
+          schema: { type: string, example: 'ACTIVE' }
+        - in: query
+          name: search
+          schema: { type: string, example: 'name' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: ok }
+                  meta:
+                    type: object
+                    properties:
+                      page: { type: number, example: 1 }
+                      size: { type: number, example: 10 }
+                      totalRecord: { type: number, example: 100 }
+                      totalPage: { type: number, example: 10 }
+                      hasPrev: { type: boolean, example: true }
+                      hasNext: { type: boolean, example: true }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string, example: ULID }
+                        name: { type: string, example: testing123 }
+                        email: { type: string, example: example@example.com }
+                        role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+                        isActive: { type: boolean, example: true }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error404' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/users/profile:
+    get:
+      summary: Get User Profile
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Fetch profile successfully }
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string, example: ULID }
+                      name: { type: string, example: testing123 }
+                      email: { type: string, example: example@example.com }
+                      role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+                      isActive: { type: boolean, example: true }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/users/{id}:
+    get:
+      summary: Get User Detail
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Fetch users detail successfully }
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string, example: ULID }
+                      name: { type: string, example: testing }
+                      email: { type: string, example: testing@example.com }
+                      role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+                      isActive: { type: boolean, example: true }
+                      createdAt: { type: string, example: '2025-01-01T00:00:00Z | null' }
+                      updatedAt: { type: string, example: '2025-01-01T00:00:00Z | null' }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error404' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+    put:
+      summary: Update User Detail
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, example: testing }
+                email: { type: string, example: testing@example.com }
+                role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+                isActive: { type: boolean, example: true }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: users detail updated successfully }
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string, example: ULID }
+                      name: { type: string, example: testing123 }
+                      email: { type: string, example: example@example.com }
+                      role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+                      isActive: { type: boolean, example: true }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '422': { description: Unprocessable Entity, content: { application/json: { schema: { $ref: '#/components/schemas/Error422' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/users/{id}/status:
+    patch:
+      summary: Update User Status
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isActive: { type: boolean, example: true }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: users status updated successfully }
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string, example: ULID }
+                      name: { type: string, example: testing123 }
+                      email: { type: string, example: example@example.com }
+                      role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+                      isActive: { type: boolean, example: true }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '422': { description: Unprocessable Entity, content: { application/json: { schema: { $ref: '#/components/schemas/Error422' } } } }
+        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error404' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+
+  /api/v1/tickets:
+    get:
+      summary: List Tickets
+      tags: [Tickets]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: string, example: "1" }
+        - in: query
+          name: size
+          schema: { type: string, example: "10" }
+        - in: query
+          name: status
+          schema: { type: string, example: OPENED | INPROGRESS | RESOLVED }
+        - in: query
+          name: startDate
+          schema: { type: string, example: 2025-01-01 }
+        - in: query
+          name: endDate
+          schema: { type: string, example: 2025-12-31 }
+        - in: query
+          name: search
+          schema: { type: string, example: title }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Fetch ticket successfully }
+                  meta:
+                    type: object
+                    properties:
+                      page: { type: number, example: 1 }
+                      size: { type: number, example: 1 }
+                      totalRecord: { type: number, example: 1 }
+                      totalPage: { type: number, example: 1 }
+                      hasPrev: { type: boolean, example: false }
+                      hasNext: { type: boolean, example: false }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string, example: ULID }
+                        date: { type: string, example: '2025-01-01T00:00:00Z' }
+                        ticketCode: { type: string, example: 001/TICKET/07/2026 }
+                        title: { type: string, example: Ticket Title }
+                        description: { type: string, example: Ticket Description }
+                        attachmentPath: { type: string, example: <PATH> }
+                        status: { type: string, example: OPENED | INPROGRESS | RESOLVED }
+                        resolvedAt: { type: string, example: '2025-01-01T00:00:00Z | null' }
+                        createdBy:
+                          type: object
+                          properties:
+                            name: { type: string, example: testing123 }
+                            email: { type: string, example: example@example.com }
+                            role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error404' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+    post:
+      summary: Create Ticket
+      tags: [Tickets]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string, example: Ticket Title }
+                description: { type: string, example: Ticket Description }
+                attachmentPath: { type: string, example: <PATH> }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: New ticket created successfully }
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string, example: ULID }
+                      date: { type: string, example: '2025-01-01T00:00:00Z' }
+                      ticketCode: { type: string, example: 001/TICKET/07/2026 }
+                      title: { type: string, example: Ticket Title }
+                      description: { type: string, example: Ticket Description }
+                      attachmentPath: { type: string, example: <PATH> }
+                      status: { type: string, example: OPENED | INPROGRESS | RESOLVED }
+                      resolvedAt: { type: string, example: '2025-01-01T00:00:00Z | null' }
+                      createdBy:
+                        type: object
+                        properties:
+                          name: { type: string, example: testing123 }
+                          email: { type: string, example: example@example.com }
+                          role: { type: string, example: USERS }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '422': { description: Unprocessable Entity, content: { application/json: { schema: { $ref: '#/components/schemas/Error422' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/tickets/{id}:
+    get:
+      summary: Get Ticket Detail
+      tags: [Tickets]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Fetch ticket detail successfully }
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string, example: ULID }
+                      date: { type: string, example: '2025-01-01T00:00:00Z' }
+                      ticketCode: { type: string, example: 001/TICKET/07/2026 }
+                      title: { type: string, example: Ticket Title }
+                      description: { type: string, example: Ticket Description }
+                      attachmentPath: { type: string, example: <PATH> }
+                      status: { type: string, example: OPENED | INPROGRESS | RESOLVED }
+                      resolvedAt: { type: string, example: '2025-01-01T00:00:00Z | null' }
+                      createdBy:
+                        type: object
+                        properties:
+                          name: { type: string, example: testing123 }
+                          email: { type: string, example: example@example.com }
+                          role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+                      replies:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id: { type: string, example: ULID }
+                            message: { type: string, example: Ticket Replies }
+                            createdAt: { type: string, example: '2025-01-01T00:00:00Z' }
+                            createdBy:
+                              type: object
+                              properties:
+                                name: { type: string, example: testing123 }
+                                email: { type: string, example: example@example.com }
+                                role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error404' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/tickets/{id}/replies:
+    post:
+      summary: Reply Ticket
+      tags: [Tickets]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message: { type: string, example: "okayyy, we will fix it soon" }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Reply added successfully }
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string, example: ULID_REPLY }
+                      ticketId: { type: string, example: ULID_TIKET }
+                      message: { type: string, example: "okayyy, we will fix it soon" }
+                      createdAt: { type: string, example: '2025-01-01T00:00:00Z' }
+                      createdBy:
+                        type: object
+                        properties:
+                          name: { type: string, example: testing123 }
+                          email: { type: string, example: example@example.com }
+                          role: { type: string, example: USERS }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '422': { description: Unprocessable Entity, content: { application/json: { schema: { $ref: '#/components/schemas/Error422' } } } }
+        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error404' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/dashboard/stat:
+    get:
+      summary: Dashboard Stats
+      tags: [Dashboard]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: startDate
+          schema: { type: string, example: 2025-01-01 }
+        - in: query
+          name: endDate
+          schema: { type: string, example: 2025-12-31 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Fetch dashboard stats successfully }
+                  data:
+                    type: object
+                    properties:
+                      startDate: { type: string, example: 2025-01-01 }
+                      endDate: { type: string, example: 2025-12-31 }
+                      totalTickets: { type: integer, example: 100 }
+                      openedTickets: { type: integer, example: 45 }
+                      inprogressTickets: { type: integer, example: 25 }
+                      resolvedTickets: { type: integer, example: 30 }
+                      statusCompositions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            status: { type: string, example: OPENED | INPROGRESS | RESOLVED }
+                            percentage: { type: integer, example: 45 }
+                            count: { type: integer, example: 45 }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
+  /api/v1/tickets/{id}/status:
+    patch:
+      summary: Update Ticket Status
+      tags: [Tickets]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, example: INPROGRESS | RESOLVED }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string, example: Ticket status updated successfully }
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string, example: ULID_TIKET }
+                      status: { type: string, example: INPROGRESS | RESOLVED }
+                      updatedAt: { type: string, example: '2025-01-01T00:00:00Z' }
+                      updatedBy:
+                        type: object
+                        properties:
+                          name: { type: string, example: testing123 }
+                          email: { type: string, example: example@example.com }
+                          role: { type: string, example: USERS | ADMIN | SUPERADMIN }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error401' } } } }
+        '403': { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error403' } } } }
+        '422': { description: Unprocessable Entity, content: { application/json: { schema: { $ref: '#/components/schemas/Error422' } } } }
+        '404': { description: Not Found, content: { application/json: { schema: { $ref: '#/components/schemas/Error404' } } } }
+        '500': { description: Internal Server Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error500' } } } }
