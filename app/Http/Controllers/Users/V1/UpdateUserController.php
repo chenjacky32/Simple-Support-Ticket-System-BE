@@ -1,6 +1,6 @@
 <?php
 
-// declare(strict_types=1);
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Users\V1;
 
@@ -30,7 +30,7 @@ final readonly class UpdateUserController
                 'role' => $updateUser->role?->role,
                 'isActive' => $updateUser->is_active,
             ],
-            message: 'users detail updated successfully',
+            message: 'user details updated successfully',
         );
     }
 }

@@ -209,7 +209,7 @@ paths:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: Fetch users detail successfully }
+                  message: { type: string, example: Fetch user details successfully }
                   data:
                     type: object
                     properties:
@@ -253,7 +253,7 @@ paths:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: users detail updated successfully }
+                  message: { type: string, example: user details updated successfully }
                   data:
                     type: object
                     properties:
@@ -293,7 +293,7 @@ paths:
                 type: object
                 properties:
                   status: { type: string, example: success }
-                  message: { type: string, example: users status updated successfully }
+                  message: { type: string, example: user status updated successfully }
                   data:
                     type: object
                     properties:

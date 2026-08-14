@@ -27,7 +27,7 @@ final readonly class GetUserDetailController
                 'createdAt'=> $userDetails->created_at->toDateTimeString(),
                 'updatedAt'=> $userDetails->updated_at->toDateTimeString()
             ],
-            message: 'Fetch users detail successfully',
+            message: 'Fetch user details successfully',
         );
     }
 }

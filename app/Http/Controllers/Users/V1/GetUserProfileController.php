@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Users\V1;
 
 use App\Actions\Users\GetUserProfile;
 use App\Http\Responses\JsonDataResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 final readonly class GetUserProfileController
 {
@@ -26,7 +24,7 @@ final readonly class GetUserProfileController
                 'role' => $userProfile->role?->role,
                 'isActive' => $userProfile->is_active,
             ],
-            message: 'ok',
+            message: 'Fetch profile successfully',
         );
     }
 }
