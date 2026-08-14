@@ -15,10 +15,12 @@ use Tests\TestCase;
      *  
         * Users Group Routing Collection Testing    
             * 1. Users List
-            *  - It should be not able to access users list without token
-            *  - It should be able to access users list with valid token
+            *  - It should be not able to access users list without access token
+            *  - It should be able to access users list with valid access token
             * 2. Filter Users
             *  - It should be able to filter users list by search and status 
+            * 3. Protected Role (SUPERADMIN only)
+            *  - It should be throw response 403 Forbidden when role is not SUPERADMIN
      *  
      */ 
 
@@ -31,10 +33,10 @@ class UsersListTest extends TestCase
         parent::setUp();
         // Create initial roles
         Role::create(['role' => 'USERS']);
-        Role::create(['role' => 'ADMIN']);
+        Role::create(['role' => 'SUPERADMIN']);
     }
 
-    public function test_it_should_be_not_able_to_access_users_list_without_token(): void
+    public function test_it_should_be_not_able_to_access_users_list_without_access_token(): void
     {
         $response = $this->getJson('/api/v1/users/list');
 
@@ -45,13 +47,13 @@ class UsersListTest extends TestCase
             ]);
     }
 
-    public function test_it_should_be_able_to_access_users_list_with_valid_token(): void
+    public function test_it_should_be_able_to_access_users_list_with_valid_access_token(): void
     {
         $user = User::create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'password' => 'secret123',
-            'role_id' => Role::where('role', 'USERS')->first()->id,
+            'role_id' => Role::where('role', 'SUPERADMIN')->first()->id,
             'is_active' => true,
         ]);
 
@@ -88,7 +90,7 @@ class UsersListTest extends TestCase
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'password' => 'secret123',
-            'role_id' => Role::where('role', 'USERS')->first()->id,
+            'role_id' => Role::where('role', 'SUPERADMIN')->first()->id,
             'is_active' => true,
         ]);
 
@@ -138,6 +140,28 @@ class UsersListTest extends TestCase
             ])
             ->assertJsonMissing([
                 'name' => 'Target Search Inactive',
+            ]);
+    }
+
+    public function test_it_should_be_throw_response_403_Forbidden_when_role_is_not_superadmin(): void
+    {
+        $user = User::create([
+            'name' => 'User',
+            'email' => 'user@example.com',
+            'password' => 'secret123',
+            'role_id' => Role::where('role', 'USERS')->first()->id,
+            'is_active' => true,
+        ]);
+
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/v1/users/list');
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'status' => 'fail',
+                'message' => 'You don\'t have permission to access this resource',
             ]);
     }
 }
