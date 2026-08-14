@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'api.jwt' => \App\Http\Middleware\VerifyJwtToken::class,
+            'allow.only.roles'=> \App\Http\Middleware\AllowOnlyRoles::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
