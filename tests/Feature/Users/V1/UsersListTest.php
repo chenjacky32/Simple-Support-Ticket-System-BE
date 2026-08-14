@@ -7,7 +7,6 @@ namespace Tests\Feature\Users\V1;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Tests\TestCase;
 
  /**
@@ -28,13 +27,6 @@ class UsersListTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Role::create(['role' => 'USERS']);
-        Role::create(['role' => 'SUPERADMIN']);
-    }
-
     public function test_it_should_be_not_able_to_access_users_list_without_access_token(): void
     {
         $response = $this->getJson('/api/v1/users/list');
@@ -48,15 +40,10 @@ class UsersListTest extends TestCase
 
     public function test_it_should_be_able_to_access_users_list_with_valid_access_token(): void
     {
-        $user = User::create([
+        [$user, $token] = $this->createAndAuthenticateUser('SUPERADMIN', [
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => 'secret123',
-            'role_id' => Role::where('role', 'SUPERADMIN')->first()->id,
-            'is_active' => true,
         ]);
-
-        $token = JWTAuth::fromUser($user);
 
         // Create some users to paginate
         User::factory()->count(15)->create([
@@ -64,7 +51,7 @@ class UsersListTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->getJson('/api/v1/users/list?page=1&size=10');
 
         $response->assertStatus(200)
@@ -85,45 +72,37 @@ class UsersListTest extends TestCase
 
     public function test_it_should_be_able_to_filter_users_list_by_search_and_status(): void
     {
-        $user = User::create([
+        [$user, $token] = $this->createAndAuthenticateUser('SUPERADMIN', [
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => 'secret123',
-            'role_id' => Role::where('role', 'SUPERADMIN')->first()->id,
-            'is_active' => true,
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
         // Active match
-        User::create([
+        User::factory()->create([
             'name' => 'Target Search Active',
             'email' => 'target.active@example.com',
-            'password' => 'secret123',
             'role_id' => Role::where('role', 'USERS')->first()->id,
             'is_active' => true,
         ]);
 
         // Inactive match
-        User::create([
+        User::factory()->create([
             'name' => 'Target Search Inactive',
             'email' => 'target.inactive@example.com',
-            'password' => 'secret123',
             'role_id' => Role::where('role', 'USERS')->first()->id,
             'is_active' => false,
         ]);
 
         // Active non-match
-        User::create([
+        User::factory()->create([
             'name' => 'Other Active',
             'email' => 'other.active@example.com',
-            'password' => 'secret123',
             'role_id' => Role::where('role', 'USERS')->first()->id,
             'is_active' => true,
         ]);
 
         // Query status ACTIVE and search "Target"
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->getJson('/api/v1/users/list?status=ACTIVE&search=Target');
 
         $response->assertStatus(200)
@@ -144,17 +123,12 @@ class UsersListTest extends TestCase
 
     public function test_it_should_be_throw_response_403_Forbidden_when_role_is_not_superadmin(): void
     {
-        $user = User::create([
+        [$user, $token] = $this->createAndAuthenticateUser('USERS', [
             'name' => 'User',
             'email' => 'user@example.com',
-            'password' => 'secret123',
-            'role_id' => Role::where('role', 'USERS')->first()->id,
-            'is_active' => true,
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->getJson('/api/v1/users/list');
 
         $response->assertStatus(403)

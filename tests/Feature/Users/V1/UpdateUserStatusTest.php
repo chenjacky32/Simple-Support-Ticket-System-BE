@@ -2,11 +2,7 @@
 
 namespace Tests\Feature\Users\V1;
 
-use App\Models\Role;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Tests\TestCase;
 
  /**
@@ -24,14 +20,6 @@ use Tests\TestCase;
 class UpdateUserStatusTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Role::create(['role' => 'USERS']);
-        Role::create(['role' => 'SUPERADMIN']);
-    }
-
     public function test_it_should_be_not_able_to_update_user_status_without_access_token(): void
     {
         $response = $this->patchJson('/api/v1/users/1/status');
@@ -45,17 +33,13 @@ class UpdateUserStatusTest extends TestCase
 
     public function test_it_should_be_able_to_update_user_status_with_valid_access_token(): void
     {
-        $user = User::create([
+        [$user, $token] = $this->createAndAuthenticateUser('SUPERADMIN', [
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => 'secret123',
-            'role_id' => Role::where('role', 'SUPERADMIN')->first()->id,
             'is_active' => false,
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->patchJson('/api/v1/users/'.$user->id.'/status', [
                 'isActive' => true,
             ]);
@@ -76,17 +60,13 @@ class UpdateUserStatusTest extends TestCase
 
     public function test_it_should_be_throw_response_403_Forbidden_when_role_is_not_superadmin(): void
     {
-        $user = User::create([
+        [$user, $token] = $this->createAndAuthenticateUser('USERS', [
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => 'secret123',
-            'role_id' => Role::where('role', 'USERS')->first()->id,
             'is_active' => false,
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->patchJson('/api/v1/users/'.$user->id.'/status', [
                 'isActive' => true,
             ]);

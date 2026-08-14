@@ -2,11 +2,7 @@
 
 namespace Tests\Feature\Users\V1;
 
-use App\Models\Role;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Tests\TestCase;
 
  /**
@@ -23,12 +19,6 @@ class UserProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Role::create(['role' => 'USERS']);
-    }
-    
     public function test_it_should_be_not_able_to_access_user_profile_without_access_token(): void
     {
         $response = $this->getJson('/api/v1/users/profile');
@@ -42,17 +32,12 @@ class UserProfileTest extends TestCase
 
     public function test_it_should_be_able_to_access_user_profile_with_valid_access_token():void
     {
-        $user = User::create([
+        [$user, $token] = $this->createAndAuthenticateUser('USERS', [
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => 'secret123',
-            'role_id' => Role::where('role', 'USERS')->first()->id,
-            'is_active' => true,
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->getJson('/api/v1/users/profile');
 
         $response->assertStatus(200)

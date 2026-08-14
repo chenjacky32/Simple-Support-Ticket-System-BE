@@ -5,8 +5,6 @@ namespace Tests\Feature\Users\V1;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Tests\TestCase;
 
  /**
@@ -26,13 +24,6 @@ class UpdateUserTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Role::create(['role' => 'USERS']);
-        Role::create(['role' => 'SUPERADMIN']);
-    }
-
     public function test_it_should_be_not_able_to_update_user_without_access_token(): void
     {
         $response = $this->putJson('/api/v1/users/123e4567');
@@ -46,17 +37,13 @@ class UpdateUserTest extends TestCase
 
     public function test_it_should_be_able_to_update_user_with_valid_access_token(): void
     {
-        $user = User::create([
+        [$user, $token] = $this->createAndAuthenticateUser('SUPERADMIN', [
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'password' => 'secret123',
-            'role_id' => Role::where('role', 'SUPERADMIN')->first()->id,
             'is_active' => false,
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->putJson('/api/v1/users/' . $user->id, [
                 'name' => 'Updated User',
                 'email' => 'updated@example.com',
@@ -81,27 +68,20 @@ class UpdateUserTest extends TestCase
 
     public function test_it_should_be_not_able_to_update_user_data_when_email_is_already_exist_in_other_user(): void
     {
-        $findRoleId = Role::where('role', 'SUPERADMIN')->first();
-
-        $firstUser = User::create([
+        User::factory()->create([
             'name' => 'First User',
             'email' => 'firstuser@example.com',
-            'password' => 'secret123',
-            'role_id' => $findRoleId->id,
+            'role_id' => Role::where('role', 'SUPERADMIN')->first()->id,
             'is_active' => false,
         ]);
 
-        $secondUser = User::create([
+        [$secondUser, $token] = $this->createAndAuthenticateUser('SUPERADMIN', [
             'name' => 'Second User',
             'email' => 'seconduser@example.com',
-            'password' => 'secret123',
-            'role_id' => $findRoleId->id,
             'is_active' => true,
         ]);
 
-        $token = JWTAuth::fromUser($secondUser);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->putJson('/api/v1/users/' . $secondUser->id, [
                 'name' => 'Second User',
                 'email' => 'firstuser@example.com',
@@ -118,17 +98,12 @@ class UpdateUserTest extends TestCase
 
     public function test_it_should_be_throw_response_403_Forbidden_when_role_is_not_superadmin(): void
     {
-        $user = User::create([
+        [$user, $token] = $this->createAndAuthenticateUser('USERS', [
             'name' => 'User',
             'email' => 'user@example.com',
-            'password' => 'secret123',
-            'role_id' => Role::where('role', 'USERS')->first()->id,
-            'is_active' => true,
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withToken($token)
             ->putJson('/api/v1/users/' . $user->id, [
                 'name' => 'Updated User',
                 'email' => 'updated@example.com',
