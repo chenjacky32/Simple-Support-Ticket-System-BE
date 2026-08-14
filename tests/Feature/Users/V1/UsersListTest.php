@@ -31,7 +31,6 @@ class UsersListTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Create initial roles
         Role::create(['role' => 'USERS']);
         Role::create(['role' => 'SUPERADMIN']);
     }

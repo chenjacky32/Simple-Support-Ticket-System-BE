@@ -61,9 +61,9 @@ class UserProfileTest extends TestCase
                 'message' => 'Fetch profile successfully',
             ])
             ->assertJsonFragment([
-                'name' => "Admin User",
-                'email' => "admin@example.com",
-                'role' => "USERS",
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
+                'role' => 'USERS',
                 'isActive' => true,
             ]);
     }
