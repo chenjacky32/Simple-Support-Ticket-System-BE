@@ -14,4 +14,10 @@ Route::prefix('v1')->group(function () {
     
     // Users Group 
     Route::prefix('users')->group(base_path('routes/api/users.php'));
+
+    // Tickets Group
+    Route::prefix('tickets')->group(base_path('routes/api/tickets.php'));
+
+    // Dashboard Group
+    Route::prefix('dashboard')->group(base_path('routes/api/dashboard.php'));
 });

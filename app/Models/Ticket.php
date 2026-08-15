@@ -14,6 +14,13 @@ class Ticket extends Model
 {
     use HasFactory, HasUlids;
 
+    /**
+     * Ticket Status Enums
+     */
+    public const STATUS_OPENED = "OPENED";
+    public const STATUS_INPROGRESS = "INPROGRESS";
+    public const STATUS_RESOLVED = "RESOLVED";
+
     protected $casts = [
         'resolved_at' => 'datetime',
     ];
