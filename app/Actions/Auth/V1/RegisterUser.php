@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Auth;
+namespace App\Actions\Auth\V1;
 
 use App\Http\Payloads\Auth\RegisterPayload;
-use App\Http\Responses\JsonDataResponse;
 use App\Models\Role;
 use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;

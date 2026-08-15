@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth\V1;
 
-use App\Actions\Auth\AttemptLogin;
+use App\Actions\Auth\V1\AttemptLogin;
 use App\Http\Requests\Auth\V1\LoginRequest;
 use App\Http\Responses\JsonDataResponse;
 use Illuminate\Http\JsonResponse;

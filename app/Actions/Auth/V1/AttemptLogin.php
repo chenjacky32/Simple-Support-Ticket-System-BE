@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Auth;
+namespace App\Actions\Auth\V1;
 
 use App\Http\Payloads\Auth\LoginPayload;
 use Illuminate\Auth\AuthenticationException;

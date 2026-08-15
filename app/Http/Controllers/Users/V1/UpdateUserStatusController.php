@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Users\V1;
 
-use App\Actions\Users\UpdateUserStatus;
+use App\Actions\Users\V1\UpdateUserStatus;
 use App\Http\Requests\Users\V1\UpdateUserStatusRequest;
 use App\Http\Responses\JsonDataResponse;
 

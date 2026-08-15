@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Users;
+namespace App\Actions\Users\V1;
 
 use App\Http\Payloads\Users\ListUserPayload;
 use App\Models\User;

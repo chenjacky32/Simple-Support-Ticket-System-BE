@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Users\V1;
 
-use App\Actions\Users\GetUserProfile;
+use App\Actions\Users\V1\GetUserProfile;
 use App\Http\Responses\JsonDataResponse;
 
 final readonly class GetUserProfileController

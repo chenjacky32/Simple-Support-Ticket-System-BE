@@ -8,7 +8,7 @@ final readonly class UpdateUserStatusPayload
 {
     public function __construct(
         public bool $isActive
-    ){
+    ) {
     }
 
     public function toArray(): array

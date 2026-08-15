@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Users\V1;
 
-use App\Actions\Users\GetUsersList;
+use App\Actions\Users\V1\GetUsersList;
 use App\Http\Requests\Users\V1\ListUserRequest;
 use App\Http\Responses\JsonDataResponse;
 use Illuminate\Http\JsonResponse;
