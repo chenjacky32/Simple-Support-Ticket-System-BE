@@ -20,6 +20,8 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasUlids;
 
+    public const STATUS_IS_ACTIVE = true;
+
     /**
      * Get the attributes that should be cast.
      *
