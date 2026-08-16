@@ -20,13 +20,13 @@ final readonly class GetTicketDetailController
         return new JsonDataResponse(
             data: [
                 'id' => $ticketDetail->id,
-                'date'=> $ticketDetail->created_at->toDateString(),
+                'date'=> $ticketDetail->created_at->toIso8601ZuluString(),
                 'ticketCode' => $ticketDetail->ticket_code,
                 'title' => $ticketDetail->title,
                 'description' => $ticketDetail->description,
                 'attachmentPath'=> $ticketDetail->attachment_path,
                 'status' => $ticketDetail->status,
-                'resolvedAt'=>  $ticketDetail->resolved_at ? $ticketDetail->resolved_at->toDateString() : null,
+                'resolvedAt'=>  $ticketDetail->resolved_at ? $ticketDetail->resolved_at->toIso8601ZuluString() : null,
                 'createdBy'=> [
                     'userId' => $ticketDetail->user?->id,
                     'name' => $ticketDetail->user?->name,

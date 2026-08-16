@@ -20,13 +20,13 @@ final readonly class ListTicketController
 
         $data = collect($paginator->items())->map(fn($ticket) => [
             'id' => $ticket->id,
-            'date' => $ticket->created_at->toDateString(),
+            'date' => $ticket->created_at->toIso8601ZuluString(),
             'ticketCode' => $ticket->ticket_code,
             'title' => $ticket->title,
             'description' => $ticket->description,
             'attachmentPath' => $ticket->attachment_path,
             'status' => $ticket->status,
-            'resolvedAt' => $ticket->resolved_at ? $ticket->resolved_at->toDateString() : null,
+            'resolvedAt' => $ticket->resolved_at ? $ticket->resolved_at->toIso8601ZuluString() : null,
             'createdBy' => [
                 'userId' => $ticket->user->id,
                 'name' => $ticket->user->name,
