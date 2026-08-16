@@ -12,7 +12,7 @@ final readonly class UpdateUserController
 {
     public function __construct(
         private UpdateUser $updateUser,
-    ){
+    ) {
     }
 
     public function __invoke(UpdateUserRequest $request, string $id): JsonDataResponse

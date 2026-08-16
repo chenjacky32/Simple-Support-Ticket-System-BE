@@ -11,8 +11,8 @@ use App\Http\Responses\JsonDataResponse;
 final readonly class UpdateUserStatusController
 {
     public function __construct(
-        private UpdateUserStatus $updateUserStatus,    
-    ){
+        private UpdateUserStatus $updateUserStatus,
+    ) {
     }
 
     public function __invoke(UpdateUserStatusRequest $request, string $id): JsonDataResponse

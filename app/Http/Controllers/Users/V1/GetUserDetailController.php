@@ -11,8 +11,7 @@ final readonly class GetUserDetailController
 {
     public function __construct(
         private GetUserDetail $getUserDetail
-    )
-    {
+    ) {
     }
 
     public function __invoke(string $id): JsonDataResponse

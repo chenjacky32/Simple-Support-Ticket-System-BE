@@ -19,7 +19,7 @@ final class ListTicketRequest extends FormRequest
         return [
             'page' => ['nullable', 'integer', 'min:1'],
             'size' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'status' => ['nullable', 'string', 'in:OPEN,INPROGRESS,RESOLVED'],
+            'status' => ['nullable', 'string', 'in:OPENED,INPROGRESS,RESOLVED'],
             'startDate' => ['nullable', 'date_format:Y-m-d'],
             'endDate' => ['nullable', 'date_format:Y-m-d'],
             'search' => ['nullable', 'string', 'min:1', 'max:255'],

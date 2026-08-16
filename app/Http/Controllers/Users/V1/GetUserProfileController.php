@@ -11,7 +11,7 @@ final readonly class GetUserProfileController
 {
     public function __construct(
         private GetUserProfile $getUserProfile
-    ){
+    ) {
     }
 
     public function __invoke()

@@ -20,7 +20,7 @@ final readonly class GetTicketList
             $ticketStatus = match ($payload->status) {
                 "OPENED" => Ticket::STATUS_OPENED,
                 "INPROGRESS" => Ticket::STATUS_INPROGRESS,
-                "CLOSED" => Ticket::STATUS_CLOSED,
+                "RESOLVED" => Ticket::STATUS_RESOLVED,
                 default => null,
             };
             $query->where('status', $ticketStatus);
