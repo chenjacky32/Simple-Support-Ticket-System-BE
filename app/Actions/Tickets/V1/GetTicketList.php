@@ -14,7 +14,9 @@ final readonly class GetTicketList
     public function handle(ListTicketPayload $payload): LengthAwarePaginator
     {
         // Implement action logic
-        $query = Ticket::query()->with('user');
+        $query = Ticket::query()
+                    ->with('user')
+                    ->orderBy('created_at', 'DESC');
 
         if ($payload->status !== null) {
             $ticketStatus = match ($payload->status) {

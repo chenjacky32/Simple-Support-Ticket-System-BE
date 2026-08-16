@@ -15,7 +15,9 @@ final readonly class GetUsersList
      */
     public function handle(ListUserPayload $payload): LengthAwarePaginator
     {
-        $query = User::query()->with('role');
+        $query = User::query()
+                    ->with('role')
+                    ->orderBy('created_at', 'DESC');
 
         if ($payload->status !== null) {
             $isActive = match ($payload->status) {
