@@ -1,58 +1,107 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<h1 align="left">Simple Support Ticket System - Backend API</h1>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+<div align="left">
+
+[![Status](https://img.shields.io/badge/status-active-success.svg)]() 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+
+</div>
+
+<p align="left"> A robust, scalable RESTful API backend built with Laravel 13 and MySQL for the Simple Support Ticket System.
+    <br> 
 </p>
 
-## About Laravel
+## 📝 Table of Contents
+- [About](#about)
+- [Architecture & Features](#features)
+- [Getting Started](#getting_started)
+- [Testing](#testing)
+- [API Documentation](#api_docs)
+- [Built Using](#built_using)
+- [Authors](#authors)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🧐 About <a name = "about"></a>
+The **Simple Support Ticket System - Backend** provides a high-performance RESTful API designed to manage customer support operations. It serves as the core data processing and storage layer for the frontend application.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The API is strictly **Stateless**, utilizing **JWT (JSON Web Tokens)** for authentication. It adopts a modern, enterprise-scale architectural pattern by decoupling business logic from routing, using **Actions**, **Payloads** (Data Transfer Objects), and **Single Action (Invokable) Controllers**.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ✨ Architecture & Features <a name = "features"></a>
+- **Enterprise Structure**: Uses strictly typed `Payloads`, pure `Actions` for business logic, and `Invokable Controllers` to ensure the codebase remains scalable and highly maintainable.
+- **Stateless Authentication**: Secured with `php-open-source-saver/jwt-auth`.
+- **Role-Based Access Control (RBAC)**: Custom middleware protects endpoints based on user roles (`USERS`, `ADMIN`, `SUPERADMIN`).
+- **Ticket Lifecycle Management**: APIs to create, retrieve, filter, reply, and securely update the status of support tickets.
+- **Dashboard Aggregation**: Real-time statistics and percentage compositions calculated directly at the database level for performance.
+- **High Test Coverage**: Comprehensive Unit Tests for data validation and Integration Tests for all API routes ensuring robust stability.
 
-## Learning Laravel
+## 🏁 Getting Started <a name = "getting_started"></a>
+Follow these instructions to set up the backend on your local machine for development and testing.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Prerequisites
+- PHP (v8.2 or higher)
+- Composer
+- MySQL (v8.x)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Installing
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
+1. Clone the repository and install dependencies:
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repository-url>
+cd "Simple Support Ticket System - BE"
+composer install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+2. Configure environment variables:
+```bash
+cp .env.example .env
+```
+Update your `.env` with your local MySQL database credentials:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_database_user
+DB_PASSWORD=your_database_password
+```
 
-## Contributing
+3. Generate application keys:
+```bash
+php artisan key:generate
+php artisan jwt:secret
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. Run database migrations and seeders (populates essential roles):
+```bash
+php artisan migrate --seed
+```
 
-## Code of Conduct
+5. Start the local development server:
+```bash
+php artisan serve
+```
+The API will be accessible at `http://localhost:8000/api/v1/`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🧪 Testing <a name="testing"></a>
+The project uses PHPUnit for robust automated testing, utilizing the `RefreshDatabase` trait to ensure an isolated and pristine environment for every test.
 
-## Security Vulnerabilities
+Run the entire test suite (Unit & Integration tests):
+```bash
+php vendor/phpunit/phpunit/phpunit
+```
+*Note: Depending on your environment configuration, using `php artisan test` might be slower, hence direct execution via the PHPUnit binary is recommended.*
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 📚 API Documentation <a name="api_docs"></a>
+The complete API Contract is documented using the OpenAPI (Swagger) 3.0 specification.
+You can find the specification in the root directory:
+- [`openapi.yaml`](./openapi.yaml)
 
-## License
+You can import this file into [Postman](https://www.postman.com/), [Insomnia](https://insomnia.rest/), or view it using [Swagger Editor](https://editor.swagger.io/) to interact with the endpoints and review request/response schemas easily.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## ⛏️ Built Using <a name = "built_using"></a>
+- [Laravel 13](https://laravel.com/) - PHP Framework
+- [MySQL 8.x](https://www.mysql.com/) - Relational Database
+- [JWT Auth](https://github.com/php-open-source-saver/jwt-auth) - Stateless Authentication Library
+- [PHPUnit](https://phpunit.de/) - Testing Framework
+
+## ✍️ Authors <a name = "authors"></a>
+- [@chenjacky32](https://github.com/chenjacky32) - Idea, Backend & Frontend Implementation
