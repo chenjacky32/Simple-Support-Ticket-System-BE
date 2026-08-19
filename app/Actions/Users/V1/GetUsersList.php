@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Users;
+namespace App\Actions\Users\V1;
 
 use App\Http\Payloads\Users\ListUserPayload;
 use App\Models\User;
@@ -15,7 +15,9 @@ final readonly class GetUsersList
      */
     public function handle(ListUserPayload $payload): LengthAwarePaginator
     {
-        $query = User::query()->with('role');
+        $query = User::query()
+                    ->with('role')
+                    ->orderBy('created_at', 'DESC');
 
         if ($payload->status !== null) {
             $isActive = match ($payload->status) {

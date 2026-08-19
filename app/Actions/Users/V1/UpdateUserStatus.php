@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Users;
+namespace App\Actions\Users\V1;
 
 use App\Models\User;
 use App\Http\Payloads\Users\UpdateUserStatusPayload;

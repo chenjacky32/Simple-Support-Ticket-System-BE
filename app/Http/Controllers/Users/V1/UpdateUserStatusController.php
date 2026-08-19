@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Users\V1;
 
-use App\Actions\Users\UpdateUserStatus;
+use App\Actions\Users\V1\UpdateUserStatus;
 use App\Http\Requests\Users\V1\UpdateUserStatusRequest;
 use App\Http\Responses\JsonDataResponse;
 
 final readonly class UpdateUserStatusController
 {
     public function __construct(
-        private UpdateUserStatus $updateUserStatus,    
-    ){
+        private UpdateUserStatus $updateUserStatus,
+    ) {
     }
 
     public function __invoke(UpdateUserStatusRequest $request, string $id): JsonDataResponse

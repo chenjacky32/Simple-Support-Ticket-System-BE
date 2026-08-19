@@ -25,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, Request $request) {
             return response()->json([
                 'status' => 'fail',
-                'message' => 'Invalid credentials',
+                'message' => $e->getMessage(),
             ], 401);
         });
 

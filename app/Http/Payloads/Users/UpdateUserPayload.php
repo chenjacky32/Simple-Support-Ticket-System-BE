@@ -11,7 +11,7 @@ final readonly class UpdateUserPayload
         public string $email,
         public string $role,
         public bool $isActive
-    ){   
+    ) {   
     }
 
     public function toArray(): array
